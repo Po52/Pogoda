@@ -3,35 +3,99 @@
 namespace App\Controller;
 
 use App\Entity\Location;
+use App\Entity\Forecast;
+use App\Form\ForecastType;
 use App\Repository\ForecastRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
 
+#[Route('/forecast')]
 final class ForecastController extends AbstractController
 {
-    // #[Route('/forecast/{id}', name: 'app_forecast', requirements: ['id' => '\d+'])]
-    // public function city(Location $location, ForecastRepository $repository): Response
-    // {
-    //     $measurements = $repository->findByLocation($location);
+    #[Route(name: 'app_forecast_index', methods: ['GET'])]
+    public function index(ForecastRepository $forecastRepository): Response
+    {
+        return $this->render('forecast/index.html.twig', [
+            'forecasts' => $forecastRepository->findAll(),
+        ]);
+    }
 
-    //     return $this->render('forecast/city.html.twig', [
-    //         'location' => $location,
-    //         'measurements' => $measurements,
-    //     ]);
-    // }
-    #[Route('forecast/{city}', name: 'app_forecast_city')]
+    #[Route('/city/{city}', name: 'app_forecast_city')]
     public function city(
         #[MapEntity(mapping: ['city' => 'city'])] Location $location,
         ForecastRepository $repository
     ): Response{
-        $measurements = $repository->findByLocation($location);
+        $forecasts = $repository->findByLoation($location);
 
         return $this->render('forecast/city.html.twig', [
             'location' => $location,
-            'measurements' => $measurements,
+            'forecasts' => $forecasts,
         ]);
+    }
+
+    #[Route('/new', name: 'app_forecast_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $forecast = new Forecast();
+        $form = $this->createForm(ForecastType::class, $forecast, [
+            'validation_groups' => 'create',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($forecast);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_forecast_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('forecast/new.html.twig', [
+            'forecast' => $forecast,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_forecast_show', methods: ['GET'])]
+    public function show(Forecast $forecast): Response
+    {
+        return $this->render('forecast/show.html.twig', [
+            'forecast' => $forecast,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_forecast_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Forecast $forecast, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ForecastType::class, $forecast, [
+            'validation_groups' => 'edit'
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_forecast_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('forecast/edit.html.twig', [
+            'forecast' => $forecast,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_forecast_delete', methods: ['POST'])]
+    public function delete(Request $request, Forecast $forecast, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$forecast->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($forecast);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_forecast_index', [], Response::HTTP_SEE_OTHER);
     }
 }

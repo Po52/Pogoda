@@ -1,0 +1,76 @@
+App\Entity\Location:
+    properties:
+        city:
+            - NotBlank:
+                message: 'Please enter city name'
+                groups: ['create','edit']
+            - Length:
+                max: 255
+                groups: ['create','edit']
+
+        country:
+            - NotBlank:
+                groups: ['create','edit']
+            - Choice:
+                choices: ['PL', 'FR', 'ES']
+                groups: ['create','edit']
+
+        latitude:
+            - NotBlank:
+                message: 'Please enter latitude'
+                groups: ['create','edit']
+            - Range:
+                min: -90
+                max: 90
+                notInRangeMessage: 'Latitude must be between -90 and 90'
+                groups: ['create','edit']
+
+        longitude:
+            - NotBlank:
+                message: 'Please enter longitude'
+                groups: ['create','edit']
+            - Range:
+                min: -180
+                max: 180
+                notInRangeMessage: 'Longitude must be between -180 and 180'
+                groups: ['create','edit']
+
+App\Entity\Forecast:
+    properties:
+        date:
+            - NotNull:
+                message: 'Please enter date'
+                groups: ['create','edit']
+
+        temperature_in_celsius:
+            - NotNull:
+                message: 'Please enter temperature'
+                groups: ['create','edit']
+            - Range:
+                min: -90
+                max: 60
+                notInRangeMessage: 'Temperature must be between -90 and 60'
+                groups: ['create','edit']
+
+        UV_index:
+            - NotNull:
+                message: 'Please enter UV index'
+                groups: ['create','edit']
+            - Range:
+                min: 0
+                max: 11
+                notInRangeMessage: 'UV index must be between 0 and 11'
+                groups: ['create','edit']
+
+        wind:
+            - NotBlank:
+                message: 'Please enter wind description'
+                groups: ['create','edit']
+            - Length:
+                max: 255
+                groups: ['create','edit']
+
+        location:
+            - NotNull:
+                message: 'Please choose location'
+                groups: ['create','edit']

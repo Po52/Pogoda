@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Location;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\ForecastRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,17 +20,18 @@ class Forecast
     private ?\DateTime $date = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 2, scale: 0)]
+    
     private ?string $temperature_in_celsius = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 2, scale: 0)]
+    
     private ?string $UV_index = null;
 
     #[ORM\Column(length: 255)]
     private ?string $wind = null;
 
     #[ORM\ManyToOne(inversedBy: 'forecasts')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?location $location = null;
+    private ?Location $location = null;
 
     public function getId(): ?int
     {
@@ -83,7 +86,7 @@ class Forecast
         return $this;
     }
 
-    public function getLocation(): ?location
+    public function getLocation(): ?Location
     {
         return $this->location;
     }
