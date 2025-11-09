@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use App\Service\ForecastUtil;
 
 
 #[Route('/forecast')]
@@ -26,12 +27,12 @@ final class ForecastController extends AbstractController
         ]);
     }
 
-    #[Route('/city/{city}', name: 'app_forecast_city')]
+    #[Route('/{country}/{city}', name: 'app_forecast_city')]
     public function city(
-        #[MapEntity(mapping: ['city' => 'city'])] Location $location,
-        ForecastRepository $repository
+        #[MapEntity(mapping: ['country' => 'country','city' => 'city'])] Location $location,
+        ForecastUtil $util,
     ): Response{
-        $forecasts = $repository->findByLoation($location);
+        $forecasts = $util->getForecastForLocation($location);
 
         return $this->render('forecast/city.html.twig', [
             'location' => $location,
