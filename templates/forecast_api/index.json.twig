@@ -1,0 +1,16 @@
+{
+  "city": "{{city}}",
+  "country": "{{country}}",
+  "forecasts": [
+    {% for m in forecasts %}
+    {
+        "date": {{m.getDate().format('Y-m-d')|raw}},
+        "TemperatureInCelsius": {{m.getTemperatureInCelsius()|raw}},
+        "Fahrenheit": {{m.getFahrenheit()|raw}},
+        "UvIndex": {{m.getUvIndex()|raw}},
+        "Wind": {{m.getWind()|raw}}
+    }
+    {% if not loop.last %}, {% endif %}
+    {% endfor %}  
+    ]
+}

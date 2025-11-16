@@ -1,0 +1,3 @@
+{% for m in forecasts %}
+{{ city }},{{ country }},{{ m.getDate().format('Y-m-d') }},{{ m.getTemperatureInCelsius() }},{{m.getFahrenheit()}},{{ m.getUvIndex() }},{{ m.getWind() }}{{ "\n" }}
+{% endfor %}

@@ -97,4 +97,10 @@ class Forecast
 
         return $this;
     }
+
+    public function getFahrenheit(): float
+    {
+        return $this->getTemperatureInCelsius() * 9/5 + 32;
+    }
+
 }

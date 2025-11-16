@@ -9,6 +9,7 @@ use App\Entity\Forecast;
 use App\Repository\ForecastRepository;
 use App\Repository\LocationRepository;
 
+
 class ForecastUtil
 {
     public function __construct(
